@@ -3,6 +3,7 @@ package me.gyuri.shoppingMall.product.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.gyuri.shoppingMall.modules.product.domain.Product;
 import me.gyuri.shoppingMall.modules.product.dto.CreateProductRequest;
+import me.gyuri.shoppingMall.modules.product.dto.UpdateProductRequest;
 import me.gyuri.shoppingMall.modules.product.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,8 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -125,5 +125,66 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.name").value(name))
                 .andExpect(jsonPath("$.price").value(price))
                 .andExpect(jsonPath("$.quantity").value(quantity));
+    }
+
+    @DisplayName("deleteProduct: 상품 삭제에 성공한다.")
+    @Test
+    public void deleteProduct() throws Exception {
+        // given
+        final String url = "/api/products/{id}";
+        final String name = "product3";
+        final int price = 5500;
+        final int quantity = 55;
+
+        Product savedProduct = productRepository.save(Product.builder()
+                .name(name)
+                .price(price)
+                .quantity(quantity)
+                .build());
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(delete(url, savedProduct.getId()))
+                .andExpect(status().isOk());
+
+        // then
+        List<Product> products = productRepository.findAll();
+
+        assertThat(products).isEmpty();
+    }
+
+    @DisplayName("updateProduct: 상품 수정에 성공한다.")
+    @Test
+    public void updateProduct() throws Exception {
+        // given
+        final String url = "/api/products/{id}";
+        final String name = "product4";
+        final int price = 100;
+        final int quantity = 3;
+
+        Product savedProduct = productRepository.save(Product.builder()
+                .name(name)
+                .price(price)
+                .quantity(quantity)
+                .build());
+
+        final String newName = "new Product";
+        final int newPrice = 10000;
+        final int newQuantity = 100;
+
+        UpdateProductRequest request = new UpdateProductRequest(newName, newPrice, newQuantity);
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(put(url, savedProduct.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(request)));
+
+        // then
+        resultActions.andExpect(status().isOk());
+
+        Product product = productRepository.findById(savedProduct.getId()).get();
+
+        assertThat(product.getName()).isEqualTo(newName);
+        assertThat(product.getPrice()).isEqualTo(newPrice);
+        assertThat(product.getQuantity()).isEqualTo(newQuantity);
     }
 }

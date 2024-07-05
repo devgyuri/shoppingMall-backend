@@ -1,8 +1,10 @@
 package me.gyuri.shoppingMall.modules.product.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import me.gyuri.shoppingMall.modules.product.domain.Product;
 import me.gyuri.shoppingMall.modules.product.dto.CreateProductRequest;
+import me.gyuri.shoppingMall.modules.product.dto.UpdateProductRequest;
 import me.gyuri.shoppingMall.modules.product.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,5 +26,19 @@ public class ProductService {
     public Product findById(long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+    }
+
+    public void delete(long id) {
+        productRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Product update(long id, UpdateProductRequest request) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+
+        product.update(request.getName(), request.getPrice(), request.getQuantity());
+
+        return product;
     }
 }

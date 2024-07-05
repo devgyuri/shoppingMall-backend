@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.gyuri.shoppingMall.modules.product.domain.Product;
 import me.gyuri.shoppingMall.modules.product.dto.CreateProductRequest;
 import me.gyuri.shoppingMall.modules.product.dto.ProductResponse;
+import me.gyuri.shoppingMall.modules.product.dto.UpdateProductRequest;
 import me.gyuri.shoppingMall.modules.product.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +42,21 @@ public class ProductController {
 
         return ResponseEntity.ok()
                 .body(new ProductResponse(product));
+    }
+
+    @DeleteMapping("/api/products/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable(value = "id") long id) {
+        productService.delete(id);
+
+        return ResponseEntity.ok()
+                .build();
+    }
+
+    @PutMapping("/api/products/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable(value = "id") long id, @RequestBody UpdateProductRequest request) {
+        Product updatedProduct = productService.update(id, request);
+
+        return ResponseEntity.ok()
+                .body(updatedProduct);
     }
 }
