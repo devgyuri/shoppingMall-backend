@@ -1,9 +1,9 @@
-package me.gyuri.shoppingMall.product.dto;
+package me.gyuri.shoppingMall.modules.product.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import me.gyuri.shoppingMall.product.domain.Product;
+import me.gyuri.shoppingMall.modules.product.domain.Product;
 
 @NoArgsConstructor
 @AllArgsConstructor

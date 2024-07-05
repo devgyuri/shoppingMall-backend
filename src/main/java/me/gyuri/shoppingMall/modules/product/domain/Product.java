@@ -1,4 +1,4 @@
-package me.gyuri.shoppingMall.product.domain;
+package me.gyuri.shoppingMall.modules.product.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
